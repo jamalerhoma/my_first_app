@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final myController = TextEditingController();
+  String _displayText = 'لا يوجد نص';
 
   void _incrementCounter() {
     setState(() {
@@ -51,6 +53,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Image.asset("assets/my_image.png",
+              height: 200),
+            const SizedBox(height: 20),
+                  Text(_displayText),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: (){
+              setState(() {
+                _displayText = myController.text;
+              });
+              print(myController.text);
+            },
+            child: const Text('اعرض النص'),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(width: 300, child: TextField(
+              controller: myController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'أدخل نصا هنا',
+              ),
+            ),),
             const Text('عدد الضغطات:'),
             Text(
               '$_counter',
