@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/add_todo_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -6,87 +7,84 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'اول تطبيق لي',
+      title: 'تطبيق قائمة المهام',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'أول تطبيق لي في فلاتر'),
+      home: const ToDoListScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class ToDoListScreen extends StatefulWidget {
+  const ToDoListScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ToDoListScreen> createState() => _ToDoListScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  final myController = TextEditingController();
-  String _displayText = 'لا يوجد نص';
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class _ToDoListScreenState extends State<ToDoListScreen> {
+  List<String> toDos = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
-      body: Center(
-
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset("assets/my_image.png",
-              height: 200),
-            const SizedBox(height: 20),
-                  Text(_displayText),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: (){
+        title: const Text('قائمة المهام'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.delete_forever),
+            onPressed: () {
               setState(() {
-                _displayText = myController.text;
+                toDos.clear();
               });
-              print(myController.text);
-            },
-            child: const Text('اعرض النص'),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(width: 300, child: TextField(
-              controller: myController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'أدخل نصا هنا',
-              ),
-            ),),
-            const Text('عدد الضغطات:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+            }
+
+          )
+        ]
       ),
+        body: toDos.isEmpty
+        ? const Center(
+          child: Text('لا يوجد مهام حاليا'),
+        )
+        : ListView.builder(
+            itemCount: toDos.length,
+        itemBuilder: (context,index){
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: ListTile(
+                  leading: const Icon(Icons.check_circle_outline),
+                  title: Text(toDos[index]),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      setState(() {
+                        toDos.removeAt(index);
+                      });
+                    }
+                  ),
+                ),
+              );
+        },
+        ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+          onPressed: () async{
+            final result = await Navigator.push(
+              context,
+            MaterialPageRoute(builder: (context) => const AddToDoScreen()),
+            );
+            if (result != null) {
+              setState(() {
+                toDos.add(result);
+              });
+            }
+          },
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
